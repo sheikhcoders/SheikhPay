@@ -1,12 +1,18 @@
 [package]
 name = "sheikhcoders/sheikhpay"
-version = "1.0.0"
+version = "1.0.1"
 description = "Non-custodial crypto payment system with payment links, invoices, and e-commerce integrations"
 
 [build]
 command = "pip install -r requirements.txt -t ."
 
 [[module]]
-name = "app"
-source = "src/main.py"
+name = "run"
+source = "run.py"
 runner = "wasmer/python"
+
+[[command]]
+name = "start"
+module = "run"
+runner = "wasmer/python"
+func = "application"
