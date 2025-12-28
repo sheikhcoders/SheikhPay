@@ -1,5 +1,5 @@
 kind: wasmer.io/App.v0
 name: sheikhpay
 owner: sheikhcoders
-package: .
+package: sheikhcoders/sheikhpay@1.0.1
 app_id: da_RrWI0t5UWyjQ
