@@ -1,11 +1,5 @@
 kind: wasmer.io/App/v1
 name: sheikhcoders/sheikhpay
 version: 1.0.0
-package:
-  name: sheikhcoders/sheikhpay
-  version: 1.0.0
-
-spec:
-  deploy:
-    namespace: sheikhcoders
-    package: sheikhcoders/sheikhpay@1.0.0
+owner: sheikhcoders
+package: sheikhcoders/sheikhpay@1.0.0
