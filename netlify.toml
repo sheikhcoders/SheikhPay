@@ -1,11 +1,12 @@
 [build]
-  command = "echo 'SheikhPay is a Python FastAPI application - deploying as static files with API routes'"
-  publish = "dist"
-  functions = "netlify/functions"
+  command = "pip install -r requirements.txt"
+  publish = "src/static"
 
 [build.environment]
-  NODE_VERSION = "20"
   PYTHON_VERSION = "3.11"
+
+[functions]
+  directory = "netlify/functions"
 
 [[redirects]]
   from = "/api/*"
@@ -18,7 +19,6 @@
   status = 200
 
 [functions]
-  directory = "netlify/functions"
   node_bundler = "esbuild"
 
 [[headers]]
@@ -63,10 +63,10 @@
     Access-Control-Allow-Headers = "Content-Type, Authorization"
 
 [context.production]
-  environment = { NODE_ENV = "production", BUILD_FLAGS = "--production" }
+  environment = { NODE_ENV = "production" }
 
 [context.deploy-preview]
-  environment = { NODE_ENV = "preview", BUILD_FLAGS = "" }
+  environment = { NODE_ENV = "preview" }
 
 [context.branch-deploy]
-  environment = { NODE_ENV = "branch", BUILD_FLAGS = "" }
+  environment = { NODE_ENV = "branch" }
