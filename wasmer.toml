@@ -1,0 +1,14 @@
+[package]
+name = "sheikhcoders/sheikhpay"
+version = "1.0.0"
+description = "Non-custodial crypto payment system with payment links, invoices, and e-commerce integrations"
+
+[dependencies]
+python = "3.11"
+
+[build]
+command = "pip install -r requirements.txt -t ."
+
+[[module]]
+name = "app"
+source = "src/main.py"

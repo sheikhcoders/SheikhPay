@@ -1,0 +1,9 @@
+kind: wasmer.io/App/v1
+name: sheikhcoders/sheikhpay
+version: 1.0.0
+
+spec:
+  wasmer.toml: wasmer.toml
+  package:
+    name: sheikhcoders/sheikhpay
+    version: 1.0.0

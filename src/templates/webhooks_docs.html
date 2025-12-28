@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhooks Documentation - SheikhPay System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .copy-btn {
+            transition: all 0.3s ease;
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .tab-active {
+            background: rgba(233, 69, 96, 0.2);
+            border-color: #e94560;
+            color: #e94560;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .sidebar-link {
+            transition: all 0.3s ease;
+        }
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .sidebar-link.active {
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 3px solid #e94560;
+            color: #e94560;
+        }
+        .method-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .method-post { background: #10b981; color: white; }
+        .method-get { background: #3b82f6; color: white; }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <!-- Navigation -->
+    <nav class="glass-card sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold">SheikhPay</span>
+                    <span class="ml-2 px-2 py-1 bg-gray-700 rounded text-xs text-gray-300">API Docs</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-300 hover:text-white transition text-sm">Dashboard</a>
+                    <a href="/api-docs" class="text-gray-300 hover:text-white transition text-sm">Full API</a>
+                    <a href="/settings" class="text-gray-300 hover:text-white transition text-sm">Settings</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar -->
+            <aside class="lg:w-64 flex-shrink-0">
+                <div class="glass-card rounded-2xl p-4 sticky top-24">
+                    <h3 class="font-bold mb-4 px-2">Contents</h3>
+                    <nav class="space-y-1">
+                        <a href="#overview" class="sidebar-link active block px-3 py-2 rounded-lg text-sm">Overview</a>
+                        <a href="#events" class="sidebar-link block px-3 py-2 rounded-lg text-sm">Webhook Events</a>
+                        <a href="#payloads" class="sidebar-link block px-3 py-2 rounded-lg text-sm">Payload Reference</a>
+                        <a href="#security" class="sidebar-link block px-3 py-2 rounded-lg text-sm">Security</a>
+                        <a href="#integration" class="sidebar-link block px-3 py-2 rounded-lg text-sm">Integration Guide</a>
+                        <a href="#testing" class="sidebar-link block px-3 py-2 rounded-lg text-sm">Testing</a>
+                        <a href="#faq" class="sidebar-link block px-3 py-2 rounded-lg text-sm">FAQ</a>
+                    </nav>
+
+                    <div class="mt-6 pt-6 border-t border-gray-700">
+                        <h4 class="font-medium mb-3 px-2 text-sm text-gray-400">Resources</h4>
+                        <div class="space-y-2">
+                            <a href="#" class="block px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white transition flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                </svg>
+                                API Reference
+                            </a>
+                            <a href="#" class="block px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white transition flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+                                </svg>
+                                SDK Downloads
+                            </a>
+                            <a href="#" class="block px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white transition flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                                Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 min-w-0">
+                <!-- Overview Section -->
+                <section id="overview" class="animate-fadeIn mb-12">
+                    <h1 class="text-3xl font-bold mb-4">Webhooks Documentation</h1>
+                    <p class="text-gray-400 mb-6">
+                        Webhooks allow you to receive real-time notifications when events occur in your SheikhPay account.
+                        Instead of polling for updates, webhooks automatically send HTTP requests to your specified endpoint
+                        whenever a relevant event happens, such as a payment being received.
+                    </p>
+
+                    <div class="glass-card rounded-2xl p-6 mb-6">
+                        <h2 class="text-xl font-bold mb-4">Quick Start</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center flex-shrink-0 font-bold text-sm">1</div>
+                                <div>
+                                    <p class="font-medium">Configure your webhook endpoint</p>
+                                    <p class="text-sm text-gray-400">Set up a URL on your server to receive webhook payloads</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center flex-shrink-0 font-bold text-sm">2</div>
+                                <div>
+                                    <p class="font-medium">Register your webhook in settings</p>
+                                    <p class="text-sm text-gray-400">Add your endpoint URL and select the events you want to receive</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center flex-shrink-0 font-bold text-sm">3</div>
+                                <div>
+                                    <p class="font-medium">Verify webhook signatures</p>
+                                    <p class="text-sm text-gray-400">Use the signature header to validate incoming requests</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center flex-shrink-0 font-bold text-sm">4</div>
+                                <div>
+                                    <p class="font-medium">Handle webhook events</p>
+                                    <p class="text-sm text-gray-400">Process the payload and return a 200 OK response</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6">
+                        <h3 class="font-bold mb-3">Example Webhook Flow</h3>
+                        <div class="bg-gray-800/50 rounded-xl p-4 code-block text-sm">
+                            <div class="text-gray-400 mb-2"># When a payment is received:</div>
+                            <div class="text-purple-400">POST</div> <span class="text-blue-400">https://your-domain.com/webhooks/cryptopay</span>
+                            <div class="text-gray-400 mt-2">Headers:</div>
+                            <div class="pl-4">X-SheikhPay-Signature: t=1492774577,v1=5257a869e7ecebeda32...</div>
+                            <div class="text-gray-400 mt-2">Body:</div>
+                            <div class="pl-4">{</div>
+                            <div class="pl-6 text-yellow-400">"event"</div>: <div class="text-green-400">"payment.received"</div>,</div>
+                            <div class="pl-6 text-yellow-400">"data"</div>: {</div>
+                            <div class="pl-8 text-yellow-400">"id"</div>: <div class="text-green-400">"pay_abc123"</div>,</div>
+                            <div class="pl-8 text-yellow-400">"amount"</div>: <div class="text-green-400">"0.05"</div>,</div>
+                            <div class="pl-8 text-yellow-400">"currency"</div>: <div class="text-green-400">"ETH"</div></div>
+                            <div class="pl-6">}</div>
+                            <div class="pl-4">}</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Webhook Events Section -->
+                <section id="events" class="animate-fadeIn mb-12">
+                    <h2 class="text-2xl font-bold mb-6">Webhook Events</h2>
+                    <p class="text-gray-400 mb-6">
+                        You can subscribe to the following webhook events. Each event contains different data
+                        about what happened and when.
+                    </p>
+
+                    <div class="glass-card rounded-2xl overflow-hidden">
+                        <table class="w-full">
+                            <thead class="border-b border-gray-700">
+                                <tr>
+                                    <th class="text-left py-4 px-6 text-gray-400 font-medium">Event Name</th>
+                                    <th class="text-left py-4 px-6 text-gray-400 font-medium">Description</th>
+                                    <th class="text-left py-4 px-6 text-gray-400 font-medium">Retry Policy</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-4 px-6">
+                                        <code class="text-pink-400 text-sm">payment.received</code>
+                                    </td>
+                                    <td class="py-4 px-6 text-gray-300 text-sm">Triggered when a payment is successfully received and confirmed</td>
+                                    <td class="py-4 px-6"><span class="text-green-400 text-sm">3 retries</span></td>
+                                </tr>
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-4 px-6">
+                                        <code class="text-pink-400 text-sm">payment.pending</code>
+                                    </td>
+                                    <td class="py-4 px-6 text-gray-300 text-sm">Triggered when a payment is detected but awaiting confirmation</td>
+                                    <td class="py-4 px-6"><span class="text-green-400 text-sm">3 retries</span></td>
+                                </tr>
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-4 px-6">
+                                        <code class="text-pink-400 text-sm">payment.failed</code>
+                                    </td>
+                                    <td class="py-4 px-6 text-gray-300 text-sm">Triggered when a payment fails or is rejected</td>
+                                    <td class="py-4 px-6"><span class="text-yellow-400 text-sm">No retry</span></td>
+                                </tr>
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-4 px-6">
+                                        <code class="text-pink-400 text-sm">invoice.created</code>
+                                    </td>
+                                    <td class="py-4 px-6 text-gray-300 text-sm">Triggered when a new invoice is created</td>
+                                    <td class="py-4 px-6"><span class="text-green-400 text-sm">3 retries</span></td>
+                                </tr>
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-4 px-6">
+                                        <code class="text-pink-400 text-sm">invoice.paid</code>
+                                    </td>
+                                    <td class="py-4 px-6 text-gray-300 text-sm">Triggered when an invoice is fully paid</td>
+                                    <td class="py-4 px-6"><span class="text-green-400 text-sm">3 retries</span></td>
+                                </tr>
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-4 px-6">
+                                        <code class="text-pink-400 text-sm">invoice.overdue</code>
+                                    </td>
+                                    <td class="py-4 px-6 text-gray-300 text-sm">Triggered when an invoice passes its due date without full payment</td>
+                                    <td class="py-4 px-6"><span class="text-yellow-400 text-sm">No retry</span></td>
+                                </tr>
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-4 px-6">
+                                        <code class="text-pink-400 text-sm">payment_link.used</code>
+                                    </td>
+                                    <td class="py-4 px-6 text-gray-300 text-sm">Triggered when a payment link is accessed for payment</td>
+                                    <td class="py-4 px-6"><span class="text-green-400 text-sm">3 retries</span></td>
+                                </tr>
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-4 px-6">
+                                        <code class="text-pink-400 text-sm">payout.completed</code>
+                                    </td>
+                                    <td class="py-4 px-6 text-gray-300 text-sm">Triggered when a payout is successfully processed</td>
+                                    <td class="py-4 px-6"><span class="text-green-400 text-sm">3 retries</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-4 px-6">
+                                        <code class="text-pink-400 text-sm">payout.failed</code>
+                                    </td>
+                                    <td class="py-4 px-6 text-gray-300 text-sm">Triggered when a payout fails</td>
+                                    <td class="py-4 px-6"><span class="text-yellow-400 text-sm">No retry</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Payload Reference Section -->
+                <section id="payloads" class="animate-fadeIn mb-12">
+                    <h2 class="text-2xl font-bold mb-6">Payload Reference</h2>
+
+                    <!-- Tabs -->
+                    <div class="flex space-x-2 mb-6">
+                        <button onclick="showPayload('payment')" id="tab-payment" class="tab-active px-4 py-2 rounded-lg text-sm border border-gray-600">Payment Event</button>
+                        <button onclick="showPayload('invoice')" id="tab-invoice" class="px-4 py-2 rounded-lg text-sm border border-gray-600">Invoice Event</button>
+                        <button onclick="showPayload('payout')" id="tab-payout" class="px-4 py-2 rounded-lg text-sm border border-gray-600">Payout Event</button>
+                    </div>
+
+                    <!-- Payment Payload -->
+                    <div id="payload-payment" class="payload-content">
+                        <div class="glass-card rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold">payment.received</h3>
+                                <button onclick="copyPayload('paymentPayload')" class="copy-btn p-2 rounded-lg border border-gray-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div id="paymentPayload" class="bg-gray-800/50 rounded-xl p-4 code-block text-sm overflow-x-auto">
+{
+  "id": "evt_abc123def456",
+  "created_at": "2025-12-28T10:30:00Z",
+  "event": "payment.received",
+  "data": {
+    "id": "pay_xyz789",
+    "type": "payment",
+    "amount": "0.05000000",
+    "currency": "ETH",
+    "network": "ethereum",
+    "status": "confirmed",
+    "customer_id": null,
+    "customer_email": null,
+    "metadata": {
+      "order_id": "ORD-12345",
+      "custom_field": "value"
+    },
+    "blockchain_data": {
+      "tx_hash": "0x7f9fade1c0d57a7af66ab4ead79fade1c0d57a7af66ab4ead79fade1c0d57a7a",
+      "block_number": 18234567,
+      "confirmations": 15,
+      "gas_used": "21000"
+    },
+    "invoice_id": null,
+    "payment_link_id": "plink_abc123",
+    "created_at": "2025-12-28T10:25:00Z",
+    "updated_at": "2025-12-28T10:30:00Z"
+  }
+}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Payload -->
+                    <div id="payload-invoice" class="payload-content hidden">
+                        <div class="glass-card rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold">invoice.paid</h3>
+                                <button onclick="copyPayload('invoicePayload')" class="copy-btn p-2 rounded-lg border border-gray-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div id="invoicePayload" class="bg-gray-800/50 rounded-xl p-4 code-block text-sm overflow-x-auto">
+{
+  "id": "evt_def456ghi789",
+  "created_at": "2025-12-28T11:00:00Z",
+  "event": "invoice.paid",
+  "data": {
+    "id": "inv_abc123",
+    "type": "invoice",
+    "number": "INV-2024-001",
+    "customer_name": "Acme Corporation",
+    "customer_email": "billing@acme.com",
+    "currency": "USD",
+    "amount": "1500.00",
+    "paid_amount": "1500.00",
+    "status": "paid",
+    "due_date": "2025-12-31",
+    "paid_at": "2025-12-28T11:00:00Z",
+    "metadata": {
+      "project": "Website Redesign"
+    },
+    "line_items": [
+      {
+        "description": "Web Development Services",
+        "quantity": 1,
+        "price": "1500.00"
+      }
+    ],
+    "created_at": "2025-12-01T09:00:00Z",
+    "updated_at": "2025-12-28T11:00:00Z"
+  }
+}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payout Payload -->
+                    <div id="payload-payout" class="payload-content hidden">
+                        <div class="glass-card rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold">payout.completed</h3>
+                                <button onclick="copyPayload('payoutPayload')" class="copy-btn p-2 rounded-lg border border-gray-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div id="payoutPayload" class="bg-gray-800/50 rounded-xl p-4 code-block text-sm overflow-x-auto">
+{
+  "id": "evt_ghi789jkl012",
+  "created_at": "2025-12-28T12:00:00Z",
+  "event": "payout.completed",
+  "data": {
+    "id": "pout_mno345",
+    "type": "payout",
+    "amount": "5.00000000",
+    "currency": "ETH",
+    "network": "ethereum",
+    "status": "completed",
+    "destination_address": "0xb549579a6d5ccfa3f8b143d11bcb4bf1494f7880",
+    "tx_hash": "0xabc123def456abc789def012abc345def678abc9",
+    "fee": "0.00050000",
+    "net_amount": "4.99950000",
+    "metadata": {
+      "payout_id": "PAYOUT-001"
+    },
+    "created_at": "2025-12-28T11:55:00Z",
+    "completed_at": "2025-12-28T12:00:00Z"
+  }
+}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Security Section -->
+                <section id="security" class="animate-fadeIn mb-12">
+                    <h2 class="text-2xl font-bold mb-6">Security</h2>
+                    <p class="text-gray-400 mb-6">
+                        To ensure the integrity and authenticity of webhook payloads, SheikhPay signs all webhook
+                        requests using a secret unique to your webhook endpoint. You should verify these signatures
+                        to confirm that requests actually came from SheikhPay.
+                    </p>
+
+                    <div class="glass-card rounded-2xl p-6 mb-6">
+                        <h3 class="font-bold mb-4">Signature Verification</h3>
+                        <p class="text-gray-400 text-sm mb-4">
+                            Each webhook request includes a <code class="text-pink-400">X-SheikhPay-Signature</code> header
+                            containing a timestamp and signature. The signature is computed using HMAC-SHA256 with your
+                            webhook secret.
+                        </p>
+
+                        <div class="bg-gray-800/50 rounded-xl p-4 code-block text-sm mb-4">
+                            <div class="text-gray-400"># Header format:</div>
+                            X-SheikhPay-Signature: t=1492774577,v1=5257a869e7ecebeda32ffe62...
+
+                            <div class="text-gray-400 mt-4"># Where:</div>
+                            <div class="pl-4">t = Unix timestamp of when the request was sent</div>
+                            <div class="pl-4">v1 = HMAC-SHA256 signature</div>
+                        </div>
+
+                        <h4 class="font-medium mb-2">Verification Steps:</h4>
+                        <ol class="list-decimal list-inside text-sm text-gray-300 space-y-2">
+                            <li>Extract the timestamp and signature from the header</li>
+                            <li>Create the signed payload string: <code class="text-pink-400">timestamp + "." + payload</code></li>
+                            <li>Compute HMAC-SHA256 of the signed payload using your secret</li>
+                            <li>Compare the computed signature with the received signature</li>
+                            <li>Ensure the timestamp is within 5 minutes of your server time</li>
+                        </ol>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6">
+                        <h3 class="font-bold mb-4">Example Verification Code</h3>
+                        <div class="bg-gray-800/50 rounded-xl p-4 code-block text-sm overflow-x-auto">
+<span class="text-purple-400">import</span> hashlib
+<span class="text-purple-400">import</span> hmac
+<span class="text-purple-400">import</span> time
+
+<span class="text-gray-400"># Your webhook secret</span>
+WEBHOOK_SECRET = <span class="text-green-400">"whsec_..."</span>
+
+<span class="text-purple-400">def</span> <span class="text-blue-400">verify_signature</span>(payload, signature_header):
+    <span class="text-gray-400"># Extract timestamp and signature</span>
+    elements = signature_header.split(<span class="text-green-400">','</span>)
+    timestamp = <span class="text-yellow-400">None</span>
+    signature = <span class="text-yellow-400">None</span>
+    
+    <span class="text-purple-400">for</span> element <span class="text-purple-400">in</span> elements:
+        <span class="text-purple-400">if</span> element.startswith(<span class="text-green-400">'t='</span>):
+            timestamp = element[<span class="text-green-400">2</span>:]
+        <span class="text-purple-400">elif</span> element.startswith(<span class="text-green-400">'v1='</span>):
+            signature = element[<span class="text-green-400">3</span>:]
+    
+    <span class="text-gray-400"># Check timestamp is within 5 minutes</span>
+    <span class="text-purple-400">if</span> <span class="text-blue-400">abs</span>(<span class="text-blue-400">int</span>(timestamp) - <span class="text-blue-400">int</span>(<span class="text-blue-400">time</span>.time())) > <span class="text-green-400">300</span>:
+        <span class="text-purple-400">return</span> <span class="text-yellow-400">False</span>
+    
+    <span class="text-gray-400"># Compute expected signature</span>
+    signed_payload = <span class="text-green-400">f</span><span class="text-green-400">"{</span>timestamp<span class="text-green-400">}.</span><span class="text-green-400">{</span>payload<span class="text-green-400">}"</span>
+    expected = hmac.new(
+        WEBHOOK_SECRET.encode(),
+        signed_payload.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    
+    <span class="text-purple-400">return</span> hmac.compare_digest(signature, expected)
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Integration Guide Section -->
+                <section id="integration" class="animate-fadeIn mb-12">
+                    <h2 class="text-2xl font-bold mb-6">Integration Guide</h2>
+
+                    <div class="glass-card rounded-2xl p-6 mb-6">
+                        <h3 class="font-bold mb-4">Setting Up Your Webhook Endpoint</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="font-medium mb-2">1. Create a Webhook Endpoint</p>
+                                <p class="text-sm text-gray-400 mb-2">Create an HTTP endpoint on your server that can receive POST requests:</p>
+                                <div class="bg-gray-800/50 rounded-xl p-4 code-block text-sm">
+                                    <span class="text-purple-400">POST</span> https://your-domain.com/webhooks/cryptopay
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-medium mb-2">2. Handle the Request</p>
+                                <p class="text-sm text-gray-400 mb-2">Process the webhook payload and return a 200 OK response:</p>
+                                <div class="bg-gray-800/50 rounded-xl p-4 code-block text-sm overflow-x-auto">
+<span class="text-purple-400">from</span> flask <span class="text-purple-400">import</span> Flask, request, jsonify
+
+app = Flask(__name__)
+
+<span class="text-purple-400">@</span>app.route(<span class="text-green-400">'/webhooks/cryptopay'</span>, methods=[<span class="text-green-400">'POST'</span>])
+<span class="text-purple-400">def</span> <span class="text-blue-400">handle_webhook</span>():
+    signature = request.headers.get(<span class="text-green-400">'X-SheikhPay-Signature'</span>)
+    payload = request.get_data(as_text=<span class="text-yellow-400">True</span>)
+    
+    <span class="text-purple-400">if not</span> verify_signature(payload, signature):
+        <span class="text-purple-400">return</span> jsonify({<span class="text-green-400">'error'</span>: <span class="text-green-400">'Invalid signature'</span>}), <span class="text-green-400">401</span>
+    
+    event = json.loads(payload)
+    event_type = event.get(<span class="text-green-400">'event'</span>)
+    
+    <span class="text-purple-400">if</span> event_type == <span class="text-green-400">'payment.received'</span>:
+        <span class="text-gray-400"># Process payment</span>
+        payment_data = event[<span class="text-green-400">'data'</span>]
+        <span class="text-blue-400">print</span>(<span class="text-green-400">f</span><span class="text-green-400">"Received payment: </span><span class="text-green-400">{</span>payment_data[<span class="text-green-400">'amount'</span>]<span class="text-green-400">}</span><span class="text-green-400"> </span><span class="text-green-400">{</span>payment_data[<span class="text-green-400">'currency'</span>]<span class="text-green-400">}"</span>)
+    
+    <span class="text-purple-400">return</span> jsonify({<span class="text-green-400">'status'</span>: <span class="text-green-400">'received'</span>}), <span class="text-green-400">200</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6">
+                        <h3 class="font-bold mb-4">Best Practices</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gray-800/30 rounded-xl p-4">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    <span class="font-medium">Respond Quickly</span>
+                                </div>
+                                <p class="text-sm text-gray-400">Return a 200 response within 5 seconds. Webhooks are considered failed if you don't respond in time.</p>
+                            </div>
+                            <div class="bg-gray-800/30 rounded-xl p-4">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    <span class="font-medium">Idempotency</span>
+                                </div>
+                                <p class="text-sm text-gray-400">Process each event once. Store event IDs to avoid duplicate processing.</p>
+                            </div>
+                            <div class="bg-gray-800/30 rounded-xl p-4">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    <span class="font-medium">Verify Signatures</span>
+                                </div>
+                                <p class="text-sm text-gray-400">Always verify the webhook requests are legitimate.</p>
+                            </div>
+ signature to ensure                            <div class="bg-gray-800/30 rounded-xl p-4">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    <span class="font-medium">Queue Events</span>
+                                </div>
+                                <p class="text-sm text-gray-400">Process webhooks asynchronously. Add events to a queue for background processing.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Testing Section -->
+                <section id="testing" class="animate-fadeIn mb-12">
+                    <h2 class="text-2xl font-bold mb-6">Testing Webhooks</h2>
+                    <p class="text-gray-400 mb-6">
+                        You can test your webhook integration using the developer dashboard or by simulating events.
+                    </p>
+
+                    <div class="glass-card rounded-2xl p-6 mb-6">
+                        <h3 class="font-bold mb-4">Test Your Endpoint</h3>
+                        <p class="text-gray-400 text-sm mb-4">
+                            Use the "Send Test Webhook" button in your dashboard to send a test event to your endpoint.
+                            This helps you verify that your endpoint is properly configured and processing events correctly.
+                        </p>
+                        <div class="bg-gray-800/50 rounded-xl p-4 code-block text-sm">
+                            <div class="text-gray-400"># Test webhook will have test_mode: true</div>
+{
+  <span class="text-yellow-400">"test_mode"</span>: <span class="text-yellow-400">true</span>,
+  <span class="text-yellow-400">"event"</span>: <span class="text-green-400">"payment.received"</span>,
+  <span class="text-yellow-400">"data"</span>: { ... }
+}
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6">
+                        <h3 class="font-bold mb-4">Webhook Logs</h3>
+                        <p class="text-gray-400 text-sm mb-4">
+                            View all webhook deliveries in your dashboard, including success/failure status,
+                            response codes, and retry attempts.
+                        </p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="border-b border-gray-700">
+                                    <tr>
+                                        <th class="text-left py-3 px-4 text-gray-400">Event</th>
+                                        <th class="text-left py-3 px-4 text-gray-400">Delivered</th>
+                                        <th class="text-left py-3 px-4 text-gray-400">Status</th>
+                                        <th class="text-left py-3 px-4 text-gray-400">Response</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-700/50">
+                                        <td class="py-3 px-4">payment.received</td>
+                                        <td class="py-3 px-4">2 min ago</td>
+                                        <td class="py-3 px-4"><span class="text-green-400">Delivered</span></td>
+                                        <td class="py-3 px-4">200 OK</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-700/50">
+                                        <td class="py-3 px-4">invoice.paid</td>
+                                        <td class="py-3 px-4">1 hour ago</td>
+                                        <td class="py-3 px-4"><span class="text-green-400">Delivered</span></td>
+                                        <td class="py-3 px-4">200 OK</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3 px-4">payment.received</td>
+                                        <td class="py-3 px-4">3 hours ago</td>
+                                        <td class="py-3 px-4"><span class="text-red-400">Failed</span></td>
+                                        <td class="py-3 px-4">500 Error</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FAQ Section -->
+                <section id="faq" class="animate-fadeIn mb-12">
+                    <h2 class="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
+
+                    <div class="space-y-4">
+                        <div class="glass-card rounded-2xl p-6">
+                            <h3 class="font-bold mb-2">What happens if my endpoint is down?</h3>
+                            <p class="text-gray-400 text-sm">
+                                SheikhPay will automatically retry failed webhook deliveries up to 3 times with
+                                exponential backoff (after 1 minute, 5 minutes, and 30 minutes). After all
+                                retries are exhausted, the webhook is marked as failed.
+                            </p>
+                        </div>
+                        <div class="glass-card rounded-2xl p-6">
+                            <h3 class="font-bold mb-2">How long are webhooks retained?</h3>
+                            <p class="text-gray-400 text-sm">
+                                Webhook delivery logs are retained for 30 days. We recommend processing and storing
+                                webhook data in your own systems for longer-term retention.
+                            </p>
+                        </div>
+                        <div class="glass-card rounded-2xl p-6">
+                            <h3 class="font-bold mb-2">Can I use the same endpoint for multiple events?</h3>
+                            <p class="text-gray-400 text-sm">
+                                Yes! A single endpoint can receive all webhook events. Use the "event" field
+                                in the payload to differentiate between different types of events.
+                            </p>
+                        </div>
+                        <div class="glass-card rounded-2xl p-6">
+                            <h3 class="font-bold mb-2">What's the difference between payment.pending and payment.received?</h3>
+                            <p class="text-gray-400 text-sm">
+                                <strong>payment.pending</strong> is sent when a transaction is detected on the blockchain
+                                but hasn't reached the required confirmation count. <strong>payment.received</strong> is
+                                sent when the payment is fully confirmed according to your network settings.
+                            </p>
+                        </div>
+                        <div class="glass-card rounded-2xl p-6">
+                            <h3 class="font-bold mb-2">How do I handle duplicate events?</h3>
+                            <p class="text-gray-400 text-sm">
+                                Each event has a unique ID (evt_...). Store these IDs and check for duplicates
+                                before processing. We also recommend making your event handlers idempotent
+                                so that processing the same event multiple times doesn't cause issues.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-card mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm text-gray-400">SheikhPay Webhooks API v1.0</span>
+                </div>
+                <div class="flex items-center space-x-6 text-sm text-gray-400">
+                    <a href="#" class="hover:text-white transition">Documentation</a>
+                    <a href="#" class="hover:text-white transition">API Reference</a>
+                    <a href="#" class="hover:text-white transition">Support</a>
+                    <a href="#" class="hover:text-white transition">Status</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 hidden">
+        <div class="glass-card rounded-xl px-6 py-4 flex items-center space-x-3 animate-fadeIn">
+            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span id="toastMessage">Copied to clipboard!</span>
+        </div>
+    </div>
+
+    <script>
+        // Show payload tab
+        function showPayload(type) {
+            // Hide all payloads
+            document.querySelectorAll('.payload-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            // Reset all tabs
+            document.querySelectorAll('[id^="tab-"]').forEach(el => {
+                el.classList.remove('tab-active');
+            });
+            // Show selected payload
+            document.getElementById(`payload-${type}`).classList.remove('hidden');
+            document.getElementById(`tab-${type}`).classList.add('tab-active');
+        }
+
+        // Copy payload
+        function copyPayload(elementId) {
+            const element = document.getElementById(elementId);
+            navigator.clipboard.writeText(element.textContent);
+            showToast('Payload copied to clipboard!');
+        }
+
+        // Show toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // Smooth scroll for sidebar links
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').slice(1);
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+                // Update active state
+                document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Update active sidebar link on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            let current = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
