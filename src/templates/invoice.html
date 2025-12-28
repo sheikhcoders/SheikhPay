@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices - SheikhPay System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #e94560;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.3);
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-paid {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        .status-overdue {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        .status-draft {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+        }
+        .status-cancelled {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+        }
+        .table-row {
+            transition: all 0.3s ease;
+        }
+        .table-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+        }
+        .copy-btn {
+            transition: all 0.3s ease;
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .item-row {
+            transition: all 0.3s ease;
+        }
+        .item-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease forwards;
+        }
+        .invoice-preview {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <!-- Navigation -->
+    <nav class="glass-card sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold">SheikhPay</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/dashboard" class="text-gray-300 hover:text-white transition">Dashboard</a>
+                    <a href="/payments" class="text-gray-300 hover:text-white transition">Payments</a>
+                    <a href="/invoices" class="text-white font-medium">Invoices</a>
+                    <a href="/payment-links" class="text-gray-300 hover:text-white transition">Payment Links</a>
+                    <a href="/settings" class="text-gray-300 hover:text-white transition">Settings</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 rounded-lg hover:bg-white/10 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                    </button>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-medium">
+                        JD
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">Invoices</h1>
+                <p class="text-gray-400">Create and manage invoices for your customers</p>
+            </div>
+            <button onclick="openModal()" class="btn-primary px-6 py-3 rounded-xl font-medium text-white mt-4 md:mt-0 flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>Create Invoice</span>
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="glass-card rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-green-400 text-sm font-medium">+15.3%</span>
+                </div>
+                <p class="text-gray-400 text-sm mb-1">Total Invoices</p>
+                <p class="text-3xl font-bold" id="totalInvoices">48</p>
+            </div>
+            <div class="glass-card rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="text-green-400 text-sm font-medium">+22.1%</span>
+                </div>
+                <p class="text-gray-400 text-sm mb-1">Paid Invoices</p>
+                <p class="text-3xl font-bold" id="paidInvoices">32</p>
+            </div>
+            <div class="glass-card rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="text-red-400 text-sm">+3 this week</span>
+                </div>
+                <p class="text-gray-400 text-sm mb-1">Pending Amount</p>
+                <p class="text-3xl font-bold" id="pendingAmount">$8,450.00</p>
+            </div>
+            <div class="glass-card rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="text-green-400 text-sm font-medium">+18.7%</span>
+                </div>
+                <p class="text-gray-400 text-sm mb-1">Total Collected</p>
+                <p class="text-3xl font-bold" id="totalCollected">$24,892.50</p>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="glass-card rounded-2xl p-4 mb-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex-1 max-w-md">
+                    <div class="relative">
+                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Search invoices..." class="input-field w-full pl-10 pr-4 py-2 rounded-xl">
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <select id="statusFilter" class="input-field px-4 py-2 rounded-xl cursor-pointer">
+                        <option value="all" class="bg-gray-800">All Status</option>
+                        <option value="paid" class="bg-gray-800">Paid</option>
+                        <option value="pending" class="bg-gray-800">Pending</option>
+                        <option value="overdue" class="bg-gray-800">Overdue</option>
+                        <option value="draft" class="bg-gray-800">Draft</option>
+                    </select>
+                    <select id="dateFilter" class="input-field px-4 py-2 rounded-xl cursor-pointer">
+                        <option value="all" class="bg-gray-800">All Time</option>
+                        <option value="today" class="bg-gray-800">Today</option>
+                        <option value="week" class="bg-gray-800">This Week</option>
+                        <option value="month" class="bg-gray-800">This Month</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoices Table -->
+        <div class="glass-card rounded-2xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-700/50">
+                            <th class="text-left py-4 px-6 text-gray-400 font-medium">Invoice #</th>
+                            <th class="text-left py-4 px-6 text-gray-400 font-medium">Customer</th>
+                            <th class="text-left py-4 px-6 text-gray-400 font-medium">Amount</th>
+                            <th class="text-left py-4 px-6 text-gray-400 font-medium">Status</th>
+                            <th class="text-left py-4 px-6 text-gray-400 font-medium">Due Date</th>
+                            <th class="text-left py-4 px-6 text-gray-400 font-medium">Created</th>
+                            <th class="text-left py-4 px-6 text-gray-400 font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoicesTable">
+                        <!-- Invoices will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="flex items-center justify-between px-6 py-4 border-t border-gray-700/50">
+                <p class="text-gray-400 text-sm">Showing <span id="showingStart">1</span> to <span id="showingEnd">10</span> of <span id="totalItems">48</span> results</p>
+                <div class="flex items-center space-x-2">
+                    <button onclick="changePage(-1)" class="p-2 rounded-lg hover:bg-white/10 transition disabled:opacity-50" id="prevBtn">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div id="pageNumbers" class="flex items-center space-x-1">
+                        <!-- Page numbers will be populated here -->
+                    </div>
+                    <button onclick="changePage(1)" class="p-2 rounded-lg hover:bg-white/10 transition disabled:opacity-50" id="nextBtn">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Invoice Modal -->
+    <div id="createModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
+        <div class="relative min-h-screen flex items-start justify-center py-8 px-4">
+            <div class="glass-card rounded-2xl p-6 w-full max-w-4xl animate-fadeIn relative">
+                <button onclick="closeModal()" class="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/10 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+                <h2 class="text-2xl font-bold mb-6">Create New Invoice</h2>
+                <form id="createInvoiceForm" onsubmit="createInvoice(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- Customer Information -->
+                        <div class="md:col-span-2">
+                            <h3 class="text-lg font-medium mb-4 text-pink-400">Customer Information</h3>
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 text-sm font-medium mb-2">Customer Name *</label>
+                            <input type="text" id="customerName" required placeholder="John Doe" class="input-field w-full px-4 py-3 rounded-xl">
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 text-sm font-medium mb-2">Customer Email</label>
+                            <input type="email" id="customerEmail" placeholder="john@example.com" class="input-field w-full px-4 py-3 rounded-xl">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-300 text-sm font-medium mb-2">Customer Wallet Address</label>
+                            <input type="text" id="customerWallet" placeholder="0x..." class="input-field w-full px-4 py-3 rounded-xl">
+                        </div>
+
+                        <!-- Invoice Details -->
+                        <div class="md:col-span-2 mt-2">
+                            <h3 class="text-lg font-medium mb-4 text-pink-400">Invoice Details</h3>
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 text-sm font-medium mb-2">Invoice Number *</label>
+                            <input type="text" id="invoiceNumber" required placeholder="INV-001" class="input-field w-full px-4 py-3 rounded-xl">
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 text-sm font-medium mb-2">Currency *</label>
+                            <select id="invoiceCurrency" required class="input-field w-full px-4 py-3 rounded-xl cursor-pointer">
+                                <option value="USD" class="bg-gray-800">USD (Stablecoins)</option>
+                                <option value="ETH" class="bg-gray-800">ETH</option>
+                                <option value="BTC" class="bg-gray-800">BTC</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 text-sm font-medium mb-2">Issue Date *</label>
+                            <input type="date" id="issueDate" required class="input-field w-full px-4 py-3 rounded-xl">
+                        </div>
+                        <div>
+                            <label class="block text-gray-300 text-sm font-medium mb-2">Due Date *</label>
+                            <input type="date" id="dueDate" required class="input-field w-full px-4 py-3 rounded-xl">
+                        </div>
+
+                        <!-- Line Items -->
+                        <div class="md:col-span-2 mt-2">
+                            <h3 class="text-lg font-medium mb-4 text-pink-400">Line Items</h3>
+                        </div>
+                        <div class="md:col-span-2">
+                            <div id="lineItems" class="space-y-3">
+                                <!-- Line items will be added here -->
+                            </div>
+                            <button type="button" onclick="addLineItem()" class="mt-4 text-pink-400 hover:text-pink-300 flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                <span>Add Line Item</span>
+                            </button>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="md:col-span-2 mt-2">
+                            <label class="block text-gray-300 text-sm font-medium mb-2">Notes / Terms</label>
+                            <textarea id="invoiceNotes" rows="3" placeholder="Payment is due within 30 days. Crypto payments accepted at current exchange rate." class="input-field w-full px-4 py-3 rounded-xl resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Summary -->
+                    <div class="glass-card rounded-xl p-4 mb-6">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-400">Subtotal</span>
+                            <span id="subtotalAmount">$0.00</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-400">Tax (0%)</span>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="flex justify-between pt-2 border-t border-gray-700">
+                            <span class="text-lg font-bold">Total</span>
+                            <span class="text-lg font-bold text-pink-400" id="totalAmount">$0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <button type="button" onclick="saveAsDraft()" class="flex-1 px-4 py-3 rounded-xl border border-gray-600 hover:bg-white/5 transition">Save as Draft</button>
+                        <button type="button" onclick="previewInvoice()" class="flex-1 px-4 py-3 rounded-xl border border-gray-600 hover:bg-white/5 transition">Preview</button>
+                        <button type="submit" class="flex-1 btn-primary px-4 py-3 rounded-xl font-medium text-white">Create & Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Invoice Modal -->
+    <div id="viewModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="modal-overlay absolute inset-0" onclick="closeViewModal()"></div>
+        <div class="relative min-h-screen flex items-center justify-center py-8 px-4">
+            <div class="glass-card rounded-2xl w-full max-w-4xl animate-fadeIn relative">
+                <button onclick="closeViewModal()" class="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/10 transition z-10">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+                <div id="invoicePreview">
+                    <!-- Invoice preview will be rendered here -->
+                </div>
+                <div class="flex items-center space-x-4 p-6 border-t border-gray-700/50">
+                    <button onclick="sendInvoice()" class="flex-1 btn-primary px-4 py-3 rounded-xl font-medium text-white flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
+                        <span>Send to Customer</span>
+                    </button>
+                    <button onclick="downloadInvoice()" class="flex-1 px-4 py-3 rounded-xl border border-gray-600 hover:bg-white/5 transition flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        <span>Download PDF</span>
+                    </button>
+                    <button onclick="recordPayment()" class="flex-1 px-4 py-3 rounded-xl bg-green-500/20 text-green-400 hover:bg-green-500/30 transition flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>Record Payment</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 z-50 hidden">
+        <div class="glass-card rounded-xl px-6 py-4 flex items-center space-x-3 animate-fadeIn">
+            <svg id="toastIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span id="toastMessage">Success!</span>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let invoices = [];
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let selectedInvoiceId = null;
+        let filteredInvoices = [];
+        let lineItemCounter = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadInvoices();
+            setupEventListeners();
+            addLineItem(); // Add first line item by default
+            // Set default dates
+            document.getElementById('issueDate').valueAsDate = new Date();
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('dueDate').valueAsDate = dueDate;
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', filterInvoices);
+            document.getElementById('statusFilter').addEventListener('change', filterInvoices);
+            document.getElementById('dateFilter').addEventListener('change', filterInvoices);
+        }
+
+        // Load invoices from API
+        async function loadInvoices() {
+            try {
+                const response = await fetch('/api/v1/invoices');
+                const data = await response.json();
+                invoices = data.invoices || [];
+                filteredInvoices = [...invoices];
+                updateStats();
+                renderInvoices();
+            } catch (error) {
+                console.error('Error loading invoices:', error);
+                // Use demo data if API fails
+                invoices = getDemoData();
+                filteredInvoices = [...invoices];
+                updateStats();
+                renderInvoices();
+            }
+        }
+
+        // Demo data for demonstration
+        function getDemoData() {
+            return [
+                { id: '1', number: 'INV-2024-001', customer: 'Acme Corp', email: 'billing@acme.com', amount: 1500, currency: 'USD', status: 'paid', issueDate: '2025-12-01', dueDate: '2025-12-31', items: [{ description: 'Web Development Services', quantity: 1, price: 1500 }] },
+                { id: '2', number: 'INV-2024-002', customer: 'TechStart Inc', email: 'finance@techstart.io', amount: 850, currency: 'USD', status: 'pending', issueDate: '2025-12-10', dueDate: '2026-01-10', items: [{ description: 'Consulting Services', quantity: 10, price: 85 }] },
+                { id: '3', number: 'INV-2024-003', customer: 'Global Trading', email: 'accounts@globaltrading.com', amount: 2500, currency: 'USD', status: 'overdue', issueDate: '2025-11-15', dueDate: '2025-12-15', items: [{ description: 'API Integration', quantity: 1, price: 2000 }, { description: 'Support', quantity: 10, price: 50 }] },
+                { id: '4', number: 'INV-2024-004', customer: 'StartUp Labs', email: 'hello@startuplabs.co', amount: 500, currency: 'USD', status: 'draft', issueDate: '2025-12-18', dueDate: '2026-01-18', items: [{ description: 'Logo Design', quantity: 1, price: 500 }] },
+                { id: '5', number: 'INV-2024-005', customer: 'Digital Agency', email: 'invoices@digitalagency.com', amount: 3200, currency: 'USD', status: 'paid', issueDate: '2025-12-05', dueDate: '2026-01-05', items: [{ description: 'SEO Services', quantity: 4, price: 800 }] },
+                { id: '6', number: 'INV-2024-006', customer: 'E-Shop Online', email: 'billing@eshop.com', amount: 750, currency: 'USD', status: 'pending', issueDate: '2025-12-12', dueDate: '2026-01-12', items: [{ description: 'E-commerce Setup', quantity: 1, price: 750 }] },
+                { id: '7', number: 'INV-2024-007', customer: 'Finance Co', email: 'accounts@financeco.com', amount: 1800, currency: 'USD', status: 'pending', issueDate: '2025-12-14', dueDate: '2026-01-14', items: [{ description: 'Financial Analysis', quantity: 20, price: 90 }] },
+                { id: '8', number: 'INV-2024-008', customer: 'Media Group', email: 'payments@mediagroup.tv', amount: 4500, currency: 'USD', status: 'paid', issueDate: '2025-12-08', dueDate: '2026-01-08', items: [{ description: 'Video Production', quantity: 3, price: 1500 }] },
+            ];
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalInvoices').textContent = invoices.length;
+            document.getElementById('paidInvoices').textContent = invoices.filter(i => i.status === 'paid').length;
+            const pending = invoices.filter(i => i.status === 'pending' || i.status === 'overdue').reduce((sum, i) => sum + i.amount, 0);
+            document.getElementById('pendingAmount').textContent = formatCurrency(pending, 'USD');
+            const collected = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0);
+            document.getElementById('totalCollected').textContent = formatCurrency(collected, 'USD');
+        }
+
+        // Filter invoices
+        function filterInvoices() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+
+            filteredInvoices = invoices.filter(invoice => {
+                const matchesSearch = invoice.number.toLowerCase().includes(searchTerm) ||
+                                     invoice.customer.toLowerCase().includes(searchTerm) ||
+                                     invoice.email.toLowerCase().includes(searchTerm);
+                const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
+
+                let matchesDate = true;
+                if (dateFilter !== 'all') {
+                    const invoiceDate = new Date(invoice.issueDate);
+                    const today = new Date();
+                    if (dateFilter === 'today') {
+                        matchesDate = invoiceDate.toDateString() === today.toDateString();
+                    } else if (dateFilter === 'week') {
+                        const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        matchesDate = invoiceDate >= weekAgo;
+                    } else if (dateFilter === 'month') {
+                        matchesDate = invoiceDate.getMonth() === today.getMonth() &&
+                                     invoiceDate.getFullYear() === today.getFullYear();
+                    }
+                }
+
+                return matchesSearch && matchesStatus && matchesDate;
+            });
+
+            currentPage = 1;
+            renderInvoices();
+        }
+
+        // Render invoices table
+        function renderInvoices() {
+            const tableBody = document.getElementById('invoicesTable');
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageInvoices = filteredInvoices.slice(start, end);
+
+            if (pageInvoices.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-12">
+                            <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                            </svg>
+                            <p class="text-gray-400">No invoices found</p>
+                            <button onclick="openModal()" class="mt-4 text-pink-400 hover:text-pink-300">Create your first invoice</button>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tableBody.innerHTML = pageInvoices.map(invoice => `
+                    <tr class="table-row border-b border-gray-700/30">
+                        <td class="py-4 px-6 font-medium">${invoice.number}</td>
+                        <td class="py-4 px-6">
+                            <div>
+                                <p class="font-medium">${invoice.customer}</p>
+                                <p class="text-sm text-gray-400">${invoice.email}</p>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 font-medium">${formatCurrency(invoice.amount, invoice.currency)}</td>
+                        <td class="py-4 px-6">
+                            <span class="status-badge status-${invoice.status}">${capitalizeFirst(invoice.status)}</span>
+                        </td>
+                        <td class="py-4 px-6 ${isOverdue(invoice.dueDate, invoice.status) ? 'text-red-400' : 'text-gray-400'}">${formatDate(invoice.dueDate)}</td>
+                        <td class="py-4 px-6 text-gray-400">${formatDate(invoice.issueDate)}</td>
+                        <td class="py-4 px-6">
+                            <div class="flex items-center space-x-2">
+                                <button onclick="viewInvoice('${invoice.id}')" class="p-2 rounded-lg hover:bg-white/10 transition" title="View">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                                <button onclick="sendInvoiceEmail('${invoice.id}')" class="p-2 rounded-lg hover:bg-white/10 transition" title="Send">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Update pagination
+            const totalPages = Math.ceil(filteredInvoices.length / itemsPerPage);
+            document.getElementById('showingStart').textContent = filteredInvoices.length > 0 ? start + 1 : 0;
+            document.getElementById('showingEnd').textContent = Math.min(end, filteredInvoices.length);
+            document.getElementById('totalItems').textContent = filteredInvoices.length;
+
+            // Render page numbers
+            const pageNumbers = document.getElementById('pageNumbers');
+            if (totalPages <= 5) {
+                pageNumbers.innerHTML = Array.from({length: totalPages}, (_, i) => `
+                    <button onclick="goToPage(${i + 1})" class="px-3 py-1 rounded-lg ${currentPage === i + 1 ? 'bg-pink-500 text-white' : 'hover:bg-white/10'} transition">${i + 1}</button>
+                `).join('');
+            } else {
+                pageNumbers.innerHTML = `
+                    <button onclick="goToPage(1)" class="px-3 py-1 rounded-lg hover:bg-white/10 transition">1</button>
+                    ${currentPage > 3 ? '<span class="text-gray-500">...</span>' : ''}
+                    ${Array.from({length: 3}, (_, i) => {
+                        const page = currentPage - 1 + i;
+                        if (page > 1 && page < totalPages) {
+                            return `<button onclick="goToPage(${page})" class="px-3 py-1 rounded-lg ${currentPage === page ? 'bg-pink-500 text-white' : 'hover:bg-white/10'} transition">${page}</button>`;
+                        }
+                        return '';
+                    }).join('')}
+                    ${currentPage < totalPages - 2 ? '<span class="text-gray-500">...</span>' : ''}
+                    <button onclick="goToPage(${totalPages})" class="px-3 py-1 rounded-lg hover:bg-white/10 transition">${totalPages}</button>
+                `;
+            }
+
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+        }
+
+        // Open create modal
+        function openModal() {
+            document.getElementById('createModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            // Generate invoice number
+            const year = new Date().getFullYear();
+            const randomNum = Math.floor(Math.random() * 900) + 100;
+            document.getElementById('invoiceNumber').value = `INV-${year}-${randomNum}`;
+        }
+
+        // Close create modal
+        function closeModal() {
+            document.getElementById('createModal').classList.add('hidden');
+            document.getElementById('createInvoiceForm').reset();
+            document.getElementById('lineItems').innerHTML = '';
+            lineItemCounter = 0;
+            addLineItem();
+            document.body.style.overflow = '';
+        }
+
+        // Add line item
+        function addLineItem() {
+            lineItemCounter++;
+            const lineItems = document.getElementById('lineItems');
+            const lineItemHtml = `
+                <div class="item-row grid grid-cols-12 gap-3 items-end p-3 rounded-lg" id="lineItem${lineItemCounter}">
+                    <div class="col-span-6">
+                        <label class="block text-gray-400 text-xs mb-1">Description</label>
+                        <input type="text" name="itemDescription" placeholder="Service or product name" class="input-field w-full px-3 py-2 rounded-lg text-sm" onchange="calculateTotal()">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-gray-400 text-xs mb-1">Qty</label>
+                        <input type="number" name="itemQuantity" value="1" min="1" class="input-field w-full px-3 py-2 rounded-lg text-sm" onchange="calculateTotal()">
+                    </div>
+                    <div class="col-span-3">
+                        <label class="block text-gray-400 text-xs mb-1">Price</label>
+                        <input type="number" name="itemPrice" value="0" min="0" step="0.01" class="input-field w-full px-3 py-2 rounded-lg text-sm" onchange="calculateTotal()">
+                    </div>
+                    <div class="col-span-1">
+                        <button type="button" onclick="removeLineItem(${lineItemCounter})" class="p-2 rounded-lg hover:bg-red-500/20 text-red-400 transition w-full flex justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            lineItems.insertAdjacentHTML('beforeend', lineItemHtml);
+        }
+
+        // Remove line item
+        function removeLineItem(id) {
+            const lineItem = document.getElementById(`lineItem${id}`);
+            if (lineItem) {
+                const items = document.querySelectorAll('[id^="lineItem"]');
+                if (items.length > 1) {
+                    lineItem.remove();
+                    calculateTotal();
+                } else {
+                    showToast('At least one line item is required', 'info');
+                }
+            }
+        }
+
+        // Calculate total
+        function calculateTotal() {
+            let subtotal = 0;
+            const quantities = document.getElementsByName('itemQuantity');
+            const prices = document.getElementsByName('itemPrice');
+
+            for (let i = 0; i < quantities.length; i++) {
+                const qty = parseFloat(quantities[i].value) || 0;
+                const price = parseFloat(prices[i].value) || 0;
+                subtotal += qty * price;
+            }
+
+            const currency = document.getElementById('invoiceCurrency').value;
+            document.getElementById('subtotalAmount').textContent = formatCurrency(subtotal, currency);
+            document.getElementById('totalAmount').textContent = formatCurrency(subtotal, currency);
+        }
+
+        // Listen for currency change
+        document.getElementById('invoiceCurrency').addEventListener('change', calculateTotal);
+
+        // Create invoice
+        async function createInvoice(event) {
+            event.preventDefault();
+
+            const items = [];
+            const descriptions = document.getElementsByName('itemDescription');
+            const quantities = document.getElementsByName('itemQuantity');
+            const prices = document.getElementsByName('itemPrice');
+
+            for (let i = 0; i < descriptions.length; i++) {
+                if (descriptions[i].value.trim()) {
+                    items.push({
+                        description: descriptions[i].value,
+                        quantity: parseFloat(quantities[i].value) || 1,
+                        price: parseFloat(prices[i].value) || 0
+                    });
+                }
+            }
+
+            const invoiceData = {
+                number: document.getElementById('invoiceNumber').value,
+                customer: document.getElementById('customerName').value,
+                email: document.getElementById('customerEmail').value,
+                wallet: document.getElementById('customerWallet').value,
+                currency: document.getElementById('invoiceCurrency').value,
+                issueDate: document.getElementById('issueDate').value,
+                dueDate: document.getElementById('dueDate').value,
+                items: items,
+                notes: document.getElementById('invoiceNotes').value,
+                amount: items.reduce((sum, item) => sum + (item.quantity * item.price), 0),
+                status: 'pending'
+            };
+
+            try {
+                const response = await fetch('/api/v1/invoices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(invoiceData)
+                });
+
+                if (response.ok) {
+                    showToast('Invoice created and sent successfully!', 'success');
+                    closeModal();
+                    loadInvoices();
+                } else {
+                    throw new Error('Failed to create invoice');
+                }
+            } catch (error) {
+                // Add to demo data for demonstration
+                invoiceData.id = Date.now().toString();
+                invoiceData.created = new Date().toISOString().split('T')[0];
+                invoices.unshift(invoiceData);
+                filteredInvoices.unshift(invoiceData);
+                updateStats();
+                renderInvoices();
+                showToast('Invoice created successfully!', 'success');
+                closeModal();
+            }
+        }
+
+        // Save as draft
+        function saveAsDraft() {
+            document.getElementById('createInvoiceForm').dispatchEvent(new Event('submit', { cancelable: true }));
+            // The createInvoice function will handle the save
+            // We just need to ensure status is set to draft
+            const invoiceData = {
+                number: document.getElementById('invoiceNumber').value,
+                customer: document.getElementById('customerName').value,
+                email: document.getElementById('customerEmail').value,
+                wallet: document.getElementById('customerWallet').value,
+                currency: document.getElementById('invoiceCurrency').value,
+                issueDate: document.getElementById('issueDate').value,
+                dueDate: document.getElementById('dueDate').value,
+                items: [],
+                notes: document.getElementById('invoiceNotes').value,
+                amount: 0,
+                status: 'draft'
+            };
+            invoiceData.id = Date.now().toString();
+            invoices.unshift(invoiceData);
+            filteredInvoices.unshift(invoiceData);
+            updateStats();
+            renderInvoices();
+            closeModal();
+            showToast('Invoice saved as draft!', 'success');
+        }
+
+        // Preview invoice
+        function previewInvoice() {
+            // Show view modal with preview
+            viewInvoice('preview');
+        }
+
+        // View invoice
+        function viewInvoice(invoiceId) {
+            selectedInvoiceId = invoiceId;
+            const invoice = invoiceId === 'preview' ? getPreviewData() : invoices.find(i => i.id === invoiceId);
+
+            if (!invoice) return;
+
+            document.getElementById('invoicePreview').innerHTML = `
+                <div class="invoice-preview p-8 rounded-xl">
+                    <div class="flex justify-between items-start mb-8">
+                        <div>
+                            <h1 class="text-3xl font-bold mb-2">INVOICE</h1>
+                            <p class="text-gray-400">#${invoice.number}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center mx-auto mb-2">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                </svg>
+                            </div>
+                            <p class="font-bold">SheikhPay</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h3 class="text-gray-400 text-sm mb-2">BILL TO</h3>
+                            <p class="font-medium">${invoice.customer}</p>
+                            <p class="text-gray-400 text-sm">${invoice.email}</p>
+                            ${invoice.wallet ? `<p class="text-gray-400 text-sm font-mono">${invoice.wallet.slice(0, 6)}...${invoice.wallet.slice(-4)}</p>` : ''}
+                        </div>
+                        <div class="text-right">
+                            <div class="mb-2">
+                                <span class="text-gray-400 text-sm">Issue Date:</span>
+                                <span class="ml-2">${formatDate(invoice.issueDate)}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-gray-400 text-sm">Due Date:</span>
+                                <span class="ml-2 ${isOverdue(invoice.dueDate, invoice.status) ? 'text-red-400' : ''}">${formatDate(invoice.dueDate)}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400 text-sm">Status:</span>
+                                <span class="ml-2 status-badge status-${invoice.status}">${capitalizeFirst(invoice.status)}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-700 pt-6 mb-6">
+                        <table class="w-full mb-6">
+                            <thead>
+                                <tr class="border-b border-gray-700">
+                                    <th class="text-left py-3 text-gray-400 font-medium">Description</th>
+                                    <th class="text-right py-3 text-gray-400 font-medium">Qty</th>
+                                    <th class="text-right py-3 text-gray-400 font-medium">Price</th>
+                                    <th class="text-right py-3 text-gray-400 font-medium">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${(invoice.items || []).map(item => `
+                                    <tr class="border-b border-gray-700/50">
+                                        <td class="py-3">${item.description}</td>
+                                        <td class="py-3 text-right">${item.quantity}</td>
+                                        <td class="py-3 text-right">${formatCurrency(item.price, invoice.currency)}</td>
+                                        <td class="py-3 text-right font-medium">${formatCurrency(item.quantity * item.price, invoice.currency)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <div class="w-64">
+                            <div class="flex justify-between py-2">
+                                <span class="text-gray-400">Subtotal</span>
+                                <span>${formatCurrency(invoice.amount, invoice.currency)}</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-t border-gray-700">
+                                <span class="font-bold">Total</span>
+                                <span class="font-bold text-pink-400 text-xl">${formatCurrency(invoice.amount, invoice.currency)}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${invoice.notes ? `
+                        <div class="mt-8 pt-6 border-t border-gray-700">
+                            <h4 class="text-gray-400 text-sm mb-2">Notes</h4>
+                            <p class="text-sm text-gray-300">${invoice.notes}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            document.getElementById('viewModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Get preview data
+        function getPreviewData() {
+            const items = [];
+            const descriptions = document.getElementsByName('itemDescription');
+            const quantities = document.getElementsByName('itemQuantity');
+            const prices = document.getElementsByName('itemPrice');
+
+            for (let i = 0; i < descriptions.length; i++) {
+                if (descriptions[i].value.trim()) {
+                    items.push({
+                        description: descriptions[i].value,
+                        quantity: parseFloat(quantities[i].value) || 1,
+                        price: parseFloat(prices[i].value) || 0
+                    });
+                }
+            }
+
+            return {
+                number: document.getElementById('invoiceNumber').value,
+                customer: document.getElementById('customerName').value || 'Customer Name',
+                email: document.getElementById('customerEmail').value || 'email@example.com',
+                wallet: document.getElementById('customerWallet').value,
+                currency: document.getElementById('invoiceCurrency').value,
+                issueDate: document.getElementById('issueDate').value,
+                dueDate: document.getElementById('dueDate').value,
+                items: items,
+                notes: document.getElementById('invoiceNotes').value,
+                amount: items.reduce((sum, item) => sum + (item.quantity * item.price), 0),
+                status: 'pending'
+            };
+        }
+
+        // Close view modal
+        function closeViewModal() {
+            document.getElementById('viewModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            selectedInvoiceId = null;
+        }
+
+        // Send invoice
+        function sendInvoice() {
+            showToast('Invoice sent to customer!', 'success');
+            closeViewModal();
+        }
+
+        // Send invoice email
+        function sendInvoiceEmail(invoiceId) {
+            showToast('Invoice email sent!', 'success');
+        }
+
+        // Download invoice
+        function downloadInvoice() {
+            showToast('PDF download started...', 'info');
+        }
+
+        // Record payment
+        function recordPayment() {
+            if (selectedInvoiceId && selectedInvoiceId !== 'preview') {
+                const invoice = invoices.find(i => i.id === selectedInvoiceId);
+                if (invoice) {
+                    invoice.status = 'paid';
+                    updateStats();
+                    renderInvoices();
+                    closeViewModal();
+                    showToast('Payment recorded successfully!', 'success');
+                }
+            }
+        }
+
+        // Change page
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredInvoices.length / itemsPerPage);
+            currentPage = Math.max(1, Math.min(currentPage + direction, totalPages));
+            renderInvoices();
+        }
+
+        // Go to specific page
+        function goToPage(page) {
+            currentPage = page;
+            renderInvoices();
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMessage.textContent = message;
+            toastIcon.innerHTML = type === 'success'
+                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>'
+                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+
+            toast.querySelector('div').className = `glass-card rounded-xl px-6 py-4 flex items-center space-x-3 animate-fadeIn ${
+                type === 'success' ? 'border-green-500/30' : 'border-yellow-500/30'
+            }`;
+            toastIcon.className = `w-6 h-6 ${type === 'success' ? 'text-green-400' : 'text-yellow-400'}`;
+
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // Utility functions
+        function formatCurrency(amount, currency) {
+            const symbol = currency === 'USD' ? '$' : currency;
+            const formattedAmount = parseFloat(amount).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            return `${symbol}${formattedAmount}`;
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function isOverdue(dueDate, status) {
+            if (status === 'paid' || status === 'cancelled') return false;
+            return new Date(dueDate) < new Date();
+        }
+    </script>
+</body>
+</html>

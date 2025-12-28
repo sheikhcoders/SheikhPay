@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay - SheikhPay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #e94560;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.3);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .currency-option {
+            transition: all 0.3s ease;
+        }
+        .currency-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .currency-option.selected {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.1);
+        }
+        .copy-btn {
+            transition: all 0.3s ease;
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(233, 69, 96, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(233, 69, 96, 0);
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.4s ease forwards;
+        }
+        @keyframes checkmark {
+            0% {
+                stroke-dashoffset: 100;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+        .success-checkmark {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: checkmark 0.8s ease forwards;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .crypto-option {
+            animation: slideIn 0.3s ease forwards;
+            opacity: 0;
+        }
+        .crypto-option:nth-child(1) { animation-delay: 0.1s; }
+        .crypto-option:nth-child(2) { animation-delay: 0.15s; }
+        .crypto-option:nth-child(3) { animation-delay: 0.2s; }
+        .crypto-option:nth-child(4) { animation-delay: 0.25s; }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <!-- Header -->
+    <header class="glass-card sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold">SheikhPay</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="hidden sm:block text-sm text-gray-400">Powered by SheikhPay</span>
+                    <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Step 1: Select Currency and Pay -->
+        <div id="step1" class="animate-fadeIn">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <!-- Payment Details Card -->
+                <div class="lg:col-span-2">
+                    <div class="glass-card rounded-2xl p-6 sticky top-24">
+                        <!-- Merchant Info -->
+                        <div class="flex items-center space-x-3 mb-6 pb-6 border-b border-gray-700">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium" id="merchantName">Your Store Name</p>
+                                <p class="text-sm text-gray-400">Payment Link</p>
+                            </div>
+                        </div>
+
+                        <!-- Payment Amount -->
+                        <div class="text-center mb-6">
+                            <p class="text-gray-400 text-sm mb-1">Amount Due</p>
+                            <div class="flex items-center justify-center space-x-1">
+                                <span class="text-4xl font-bold" id="displayAmount">0.05</span>
+                                <span class="text-xl text-gray-400" id="displayCurrency">ETH</span>
+                            </div>
+                            <p class="text-gray-400 text-sm mt-1" id="usdEquivalent">≈ $150.00 USD</p>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-6">
+                            <p class="text-gray-400 text-sm mb-2">Description</p>
+                            <p class="text-sm" id="paymentDescription">Monthly subscription payment for premium services.</p>
+                        </div>
+
+                        <!-- Link Info -->
+                        <div class="pt-4 border-t border-gray-700">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-400">Link Created</span>
+                                <span id="createdDate">Dec 1, 2025</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Status</span>
+                                <span class="text-green-400 flex items-center">
+                                    <span class="w-2 h-2 rounded-full bg-green-400 mr-2"></span>
+                                    Active
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Currency Selection and Payment -->
+                <div class="lg:col-span-3">
+                    <div class="glass-card rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-2">Select Payment Currency</h2>
+                        <p class="text-gray-400 text-sm mb-6">Choose your preferred cryptocurrency to complete this payment</p>
+
+                        <!-- Currency Options -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <button onclick="selectCurrency('ETH')" id="currencyETH" class="crypto-option currency-option p-4 rounded-xl border border-gray-700 text-left">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                                        <span class="text-purple-400 font-bold text-lg">Ξ</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">Ethereum</p>
+                                        <p class="text-xs text-gray-400">ETH</p>
+                                    </div>
+                                </div>
+                            </button>
+                            <button onclick="selectCurrency('USDT')" id="currencyUSDT" class="crypto-option currency-option p-4 rounded-xl border border-gray-700 text-left">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                                        <span class="text-green-400 font-bold text-lg">₮</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">Tether</p>
+                                        <p class="text-xs text-gray-400">USDT</p>
+                                    </div>
+                                </div>
+                            </button>
+                            <button onclick="selectCurrency('USDC')" id="currencyUSDC" class="crypto-option currency-option p-4 rounded-xl border border-gray-700 text-left">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                                        <span class="text-blue-400 font-bold text-lg">$</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">USD Coin</p>
+                                        <p class="text-xs text-gray-400">USDC</p>
+                                    </div>
+                                </div>
+                            </button>
+                            <button onclick="selectCurrency('BTC')" id="currencyBTC" class="crypto-option currency-option p-4 rounded-xl border border-gray-700 text-left">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                                        <span class="text-orange-400 font-bold text-lg">₿</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">Bitcoin</p>
+                                        <p class="text-xs text-gray-400">BTC</p>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Network Selector (for tokens) -->
+                        <div id="networkSection" class="mb-6 hidden">
+                            <label class="block text-gray-400 text-sm mb-2">Select Network</label>
+                            <select id="networkSelect" onchange="updateNetwork()" class="input-field w-full px-4 py-3 rounded-xl cursor-pointer">
+                                <option value="ethereum">Ethereum Mainnet</option>
+                                <option value="bsc">BNB Smart Chain</option>
+                                <option value="polygon">Polygon PoS</option>
+                                <option value="arbitrum">Arbitrum One</option>
+                            </select>
+                            <p class="text-xs text-yellow-400 mt-2 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                Always send on the correct network to avoid loss of funds
+                            </p>
+                        </div>
+
+                        <!-- Continue Button -->
+                        <button onclick="goToPayment()" id="continueBtn" class="btn-primary w-full py-4 rounded-xl font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2" disabled>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span>Continue to Payment</span>
+                        </button>
+
+                        <!-- Security Badge -->
+                        <div class="mt-6 pt-6 border-t border-gray-700">
+                            <div class="flex items-center justify-center space-x-6 text-xs text-gray-400">
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                    Secure
+                                </span>
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    </svg>
+                                    Encrypted
+                                </span>
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Verified
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Payment Details -->
+        <div id="step2" class="hidden animate-fadeIn">
+            <div class="max-w-xl mx-auto">
+                <button onclick="goBack()" class="flex items-center text-gray-400 hover:text-white mb-6 transition">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Back to Currency Selection
+                </button>
+
+                <div class="glass-card rounded-2xl p-6 mb-6">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-bold mb-2">Complete Payment</h2>
+                        <p class="text-gray-400">Send exactly the amount shown below</p>
+                    </div>
+
+                    <!-- Amount Display -->
+                    <div class="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 mb-6 text-center border border-gray-700">
+                        <div class="flex items-center justify-center space-x-2 mb-2">
+                            <span id="selectedCurrencyIcon" class="text-3xl">Ξ</span>
+                            <span id="paymentAmount" class="text-5xl font-bold">0.05</span>
+                            <span id="paymentCurrency" class="text-2xl text-gray-400">ETH</span>
+                        </div>
+                        <p class="text-gray-400 text-sm" id="networkInfo">Ethereum Mainnet</p>
+                    </div>
+
+                    <!-- QR Code -->
+                    <div class="text-center mb-6">
+                        <div class="inline-block p-4 bg-white rounded-xl mb-3">
+                            <div id="qrCode" class="w-48 h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-32 h-32 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400">Scan with your wallet app</p>
+                    </div>
+
+                    <!-- Wallet Address -->
+                    <div class="mb-4">
+                        <label class="block text-gray-400 text-sm mb-2">Send to Wallet Address</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="walletAddress" readonly class="input-field flex-1 px-4 py-3 rounded-xl text-sm font-mono bg-gray-800/50" value="0x9646b67E78e81F88eb59177ec5a8c38fD2B0dcA2">
+                            <button onclick="copyAddress()" class="copy-btn p-3 rounded-xl border border-gray-600 flex items-center space-x-2 hover:bg-white/5">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="hidden sm:inline">Copy</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Payment Reference -->
+                    <div class="mb-6">
+                        <label class="block text-gray-400 text-sm mb-2">Payment Reference</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="paymentRef" readonly class="input-field flex-1 px-4 py-3 rounded-xl text-sm font-mono bg-gray-800/50" value="PAY-LINK-ABC123">
+                            <button onclick="copyRef()" class="copy-btn p-3 rounded-xl border border-gray-600 flex items-center space-x-2 hover:bg-white/5">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="hidden sm:inline">Copy</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Button -->
+                    <button onclick="confirmPayment()" id="confirmBtn" class="btn-primary w-full py-4 rounded-xl font-medium text-white flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>I Have Sent the Payment</span>
+                    </button>
+
+                    <p class="text-center text-gray-400 text-sm mt-4">
+                        Minimum confirmations: 1<br>
+                        Processing time: 1-5 minutes
+                    </p>
+                </div>
+
+                <!-- Help Section -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="font-medium mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Need Help?
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <a href="#" class="block text-gray-400 hover:text-white transition flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            How to make a crypto payment
+                        </a>
+                        <a href="#" class="block text-gray-400 hover:text-white transition flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            Contact merchant support
+                        </a>
+                        <a href="#" class="block text-gray-400 hover:text-white transition flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            View payment terms
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Confirmation -->
+        <div id="step3" class="hidden animate-fadeIn">
+            <div class="max-w-lg mx-auto text-center">
+                <div class="glass-card rounded-2xl p-8">
+                    <!-- Success Icon -->
+                    <div class="w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-green-400 success-checkmark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+
+                    <h2 class="text-3xl font-bold mb-2">Payment Sent!</h2>
+                    <p class="text-gray-400 mb-8">Your payment has been submitted and is being processed. The merchant will be notified automatically.</p>
+
+                    <!-- Payment Summary -->
+                    <div class="bg-gray-800/50 rounded-xl p-6 mb-6 text-left">
+                        <div class="space-y-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Amount Sent</span>
+                                <span class="font-medium" id="confirmAmount">0.05 ETH</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Transaction Hash</span>
+                                <span class="font-mono text-sm" id="confirmTx">0x7f9a...3b2c</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Status</span>
+                                <span class="flex items-center text-green-400">
+                                    <span class="w-2 h-2 rounded-full bg-green-400 mr-2 pulse-animation"></span>
+                                    Pending Confirmation
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Payment Reference</span>
+                                <span class="font-mono text-sm" id="confirmRef">PAY-LINK-ABC123</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="space-y-3">
+                        <button onclick="downloadReceipt()" class="btn-primary w-full py-3 rounded-xl font-medium text-white flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            <span>Download Receipt</span>
+                        </button>
+                        <button onclick="viewOnExplorer()" class="btn-secondary w-full py-3 rounded-xl font-medium text-white flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                            <span>View on Explorer</span>
+                        </button>
+                    </div>
+
+                    <p class="text-gray-400 text-sm mt-6">
+                        A confirmation email has been sent to your provided email address.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+            <div class="glass-card rounded-xl p-4">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        <span>Secured by blockchain technology</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="#" class="hover:text-white transition">Terms</a>
+                        <a href="#" class="hover:text-white transition">Privacy</a>
+                        <a href="#" class="hover:text-white transition">Help</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 hidden">
+        <div class="glass-card rounded-xl px-6 py-4 flex items-center space-x-3 animate-fadeIn">
+            <svg id="toastIcon" class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span id="toastMessage">Copied to clipboard!</span>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let selectedCurrency = null;
+        let selectedNetwork = 'ethereum';
+        let paymentLinkData = {};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPaymentLinkData();
+        });
+
+        // Load payment link data (simulated)
+        function loadPaymentLinkData() {
+            paymentLinkData = {
+                merchant: 'Your Store Name',
+                amount: 0.05,
+                originalAmount: 150,
+                currency: 'ETH',
+                description: 'Monthly subscription payment for premium services.',
+                created: '2025-12-01',
+                status: 'active'
+            };
+
+            // Update UI
+            document.getElementById('merchantName').textContent = paymentLinkData.merchant;
+            document.getElementById('displayAmount').textContent = paymentLinkData.amount;
+            document.getElementById('displayCurrency').textContent = paymentLinkData.currency;
+            document.getElementById('usdEquivalent').textContent = `≈ $${paymentLinkData.originalAmount.toLocaleString()} USD`;
+            document.getElementById('paymentDescription').textContent = paymentLinkData.description;
+            document.getElementById('createdDate').textContent = formatDate(paymentLinkData.created);
+        }
+
+        // Select currency
+        function selectCurrency(currency) {
+            selectedCurrency = currency;
+
+            // Update UI
+            document.querySelectorAll('.currency-option').forEach(el => {
+                el.classList.remove('selected', 'border-pink-500');
+            });
+            document.getElementById(`currency${currency}`).classList.add('selected', 'border-pink-500');
+
+            // Show/hide network selector
+            const networkSection = document.getElementById('networkSection');
+            if (['ETH', 'USDT', 'USDC'].includes(currency)) {
+                networkSection.classList.remove('hidden');
+            } else {
+                networkSection.classList.add('hidden');
+            }
+
+            // Enable continue button
+            document.getElementById('continueBtn').disabled = false;
+        }
+
+        // Update network
+        function updateNetwork() {
+            selectedNetwork = document.getElementById('networkSelect').value;
+        }
+
+        // Go to payment step
+        function goToPayment() {
+            if (!selectedCurrency) return;
+
+            // Update payment amount display
+            const currencyIcons = { ETH: 'Ξ', USDT: '₮', USDC: '$', BTC: '₿' };
+            document.getElementById('selectedCurrencyIcon').textContent = currencyIcons[selectedCurrency] || selectedCurrency;
+            document.getElementById('paymentAmount').textContent = paymentLinkData.amount;
+            document.getElementById('paymentCurrency').textContent = selectedCurrency;
+
+            // Update network info
+            const networkNames = {
+                ethereum: 'Ethereum Mainnet',
+                bsc: 'BNB Smart Chain',
+                polygon: 'Polygon PoS',
+                arbitrum: 'Arbitrum One'
+            };
+            document.getElementById('networkInfo').textContent = networkNames[selectedNetwork];
+
+            // Generate payment reference
+            const paymentRef = `PAY-LINK-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+            document.getElementById('paymentRef').value = paymentRef;
+
+            // Switch to step 2
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Go back to step 1
+        function goBack() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+        }
+
+        // Confirm payment
+        function confirmPayment() {
+            const btn = document.getElementById('confirmBtn');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Processing...</span>
+            `;
+            btn.disabled = true;
+
+            // Simulate payment processing
+            setTimeout(() => {
+                // Generate fake transaction hash
+                const txHash = '0x' + Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+                document.getElementById('confirmAmount').textContent = `${paymentLinkData.amount} ${selectedCurrency}`;
+                document.getElementById('confirmTx').textContent = txHash.slice(0, 6) + '...' + txHash.slice(-4);
+                document.getElementById('confirmRef').textContent = document.getElementById('paymentRef').value;
+
+                // Switch to step 3
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step3').classList.remove('hidden');
+
+                showToast('Payment submitted successfully!', 'success');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 2000);
+        }
+
+        // Copy address
+        function copyAddress() {
+            const address = document.getElementById('walletAddress').value;
+            navigator.clipboard.writeText(address);
+            showToast('Wallet address copied!', 'success');
+        }
+
+        // Copy payment reference
+        function copyRef() {
+            const ref = document.getElementById('paymentRef').value;
+            navigator.clipboard.writeText(ref);
+            showToast('Payment reference copied!', 'success');
+        }
+
+        // Download receipt
+        function downloadReceipt() {
+            showToast('Downloading receipt...', 'info');
+        }
+
+        // View on explorer
+        function viewOnExplorer() {
+            showToast('Opening block explorer...', 'info');
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMessage.textContent = message;
+            toast.querySelector('div').className = `glass-card rounded-xl px-6 py-4 flex items-center space-x-3 animate-fadeIn`;
+            toastIcon.className = `w-6 h-6 ${type === 'success' ? 'text-green-400' : 'text-yellow-400'}`;
+
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // Utility functions
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+    </script>
+</body>
+</html>
