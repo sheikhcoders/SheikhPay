@@ -1,12 +1,11 @@
 kind: wasmer.io/App/v1
 name: sheikhcoders/sheikhpay
 version: 1.0.0
+package:
+  name: sheikhcoders/sheikhpay
+  version: 1.0.0
 
 spec:
-  package:
-    name: sheikhcoders/sheikhpay
-    version: 1.0.0
   deploy:
     namespace: sheikhcoders
     package: sheikhcoders/sheikhpay@1.0.0
-    runtime: wasmer/python
